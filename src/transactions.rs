@@ -1612,6 +1612,12 @@ mod tests {
         let mut emergency_tx_no_feebump =
             EmergencyTransaction::new(deposit_txin.clone(), None, emergency_address.clone(), 0)
                 .unwrap();
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_emergency/emer-{}", i),
+            emergency_tx_no_feebump.as_psbt_serialized(),
+        )
+        .unwrap();
 
         let value_no_feebump =
             emergency_tx_no_feebump.inner_tx().global.unsigned_tx.output[0].value;
@@ -1656,8 +1662,20 @@ mod tests {
             Some(child_number),
             SigHashType::AllPlusAnyoneCanPay,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_emergency/emer-{}", i),
+            emergency_tx_no_feebump.as_psbt_serialized(),
+        )
+        .unwrap();
         // Without feebump it finalizes just fine
         emergency_tx_no_feebump.finalize(&secp)?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_emergency/emer-{}", i),
+            emergency_tx_no_feebump.as_psbt_serialized(),
+        )
+        .unwrap();
 
         let feebump_txin = FeeBumpTxIn::new(
             OutPoint {
@@ -1671,6 +1689,12 @@ mod tests {
             Some(feebump_txin),
             emergency_address.clone(),
             0,
+        )
+        .unwrap();
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_emergency/emer-{}", i),
+            emergency_tx.as_psbt_serialized(),
         )
         .unwrap();
         let emergency_tx_sighash_feebump = emergency_tx
@@ -1690,6 +1714,12 @@ mod tests {
             Some(child_number),
             SigHashType::AllPlusAnyoneCanPay,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_emergency/emer-{}", i),
+            emergency_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         satisfy_transaction_input(
             &secp,
             &mut emergency_tx,
@@ -1699,7 +1729,19 @@ mod tests {
             None,
             SigHashType::All,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_emergency/emer-{}", i),
+            emergency_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         emergency_tx.finalize(&secp)?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_emergency/emer-{}", i),
+            emergency_tx.as_psbt_serialized(),
+        )
+        .unwrap();
 
         // Create but don't sign the unvaulting transaction until all revaulting transactions
         // are finalized
@@ -1719,6 +1761,13 @@ mod tests {
             xpub_ctx,
             0,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_unvault/unvault-{}", i),
+            unvault_tx.as_psbt_serialized(),
+        )
+        .unwrap();
+
         let unvault_value = unvault_tx.inner_tx().global.unsigned_tx.output[0].value;
         // 548 is the witstrip weight of an unvault tx (1 segwit input, 2 P2WSH txouts), 6 is the
         // feerate is sat/WU, and 30_000 is the CPFP output value.
@@ -1733,6 +1782,12 @@ mod tests {
         // We can create it entirely without the feebump input
         let mut cancel_tx_without_feebump =
             CancelTransaction::new(unvault_txin.clone(), None, &deposit_descriptor, xpub_ctx, 0);
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_cancel/cancel-{}", i),
+            cancel_tx_without_feebump.as_psbt_serialized(),
+        )
+        .unwrap();
         // Keep track of the fees we computed..
         let value_no_feebump = cancel_tx_without_feebump
             .inner_tx()
@@ -1757,7 +1812,19 @@ mod tests {
             Some(child_number),
             SigHashType::AllPlusAnyoneCanPay,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_cancel/cancel-{}", i),
+            cancel_tx_without_feebump.as_psbt_serialized(),
+        )
+        .unwrap();
         cancel_tx_without_feebump.finalize(&secp).unwrap();
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_cancel/cancel-{}", i),
+            cancel_tx_without_feebump.as_psbt_serialized(),
+        )
+        .unwrap();
         // We can reuse the ANYONE_ALL sighash for the one with the feebump input
         let feebump_txin = FeeBumpTxIn::new(
             OutPoint {
@@ -1773,6 +1840,12 @@ mod tests {
             xpub_ctx,
             0,
         );
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_cancel/cancel-{}", i),
+            cancel_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         // It really is a belt-and-suspenders check as the sighash would differ too.
         assert_eq!(
             cancel_tx_without_feebump
@@ -1791,6 +1864,12 @@ mod tests {
                 SigHashType::All,
             )
             .expect("Input exists");
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_cancel/cancel-{}", i),
+            cancel_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         satisfy_transaction_input(
             &secp,
             &mut cancel_tx,
@@ -1800,6 +1879,12 @@ mod tests {
             Some(child_number),
             SigHashType::AllPlusAnyoneCanPay,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_cancel/cancel-{}", i),
+            cancel_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         satisfy_transaction_input(
             &secp,
             &mut cancel_tx,
@@ -1809,7 +1894,20 @@ mod tests {
             None, // No derivation path for the feebump key
             SigHashType::All,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_cancel/cancel-{}", i),
+            cancel_tx.as_psbt_serialized(),
+        )
+        .unwrap();
+
         cancel_tx.finalize(&secp)?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_cancel/cancel-{}", i),
+            cancel_tx.as_psbt_serialized(),
+        )
+        .unwrap();
 
         // Create and sign the second (unvault) emergency transaction
         let unvault_txin = unvault_tx.unvault_txin(&unvault_descriptor, xpub_ctx, RBF_SEQUENCE);
@@ -1820,6 +1918,12 @@ mod tests {
             emergency_address.clone(),
             0,
         );
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_unvault_emergency/unemer-{}", i),
+            unemergency_tx_no_feebump.as_psbt_serialized(),
+        )
+        .unwrap();
         let value_no_feebump = unemergency_tx_no_feebump
             .inner_tx()
             .global
@@ -1843,7 +1947,19 @@ mod tests {
             Some(child_number),
             SigHashType::AllPlusAnyoneCanPay,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_unvault_emergency/unemer-{}", i),
+            unemergency_tx_no_feebump.as_psbt_serialized(),
+        )
+        .unwrap();
         unemergency_tx_no_feebump.finalize(&secp)?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_unvault_emergency/unemer-{}", i),
+            unemergency_tx_no_feebump.as_psbt_serialized(),
+        )
+        .unwrap();
 
         let feebump_txin = FeeBumpTxIn::new(
             OutPoint {
@@ -1858,6 +1974,12 @@ mod tests {
             emergency_address,
             0,
         );
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_unvault_emergency/unemer-{}", i),
+            unemergency_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         satisfy_transaction_input(
             &secp,
             &mut unemergency_tx,
@@ -1867,6 +1989,12 @@ mod tests {
             Some(child_number),
             SigHashType::AllPlusAnyoneCanPay,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_unvault_emergency/unemer-{}", i),
+            unemergency_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         // We don't have satisfied the feebump input yet!
         // Note that we clone because Miniscript's finalize() will wipe the PSBT input..
         match unemergency_tx.clone().finalize(&secp) {
@@ -1895,7 +2023,19 @@ mod tests {
             None,
             SigHashType::All,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_unvault_emergency/unemer-{}", i),
+            unemergency_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         unemergency_tx.finalize(&secp)?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_unvault_emergency/unemer-{}", i),
+            unemergency_tx.as_psbt_serialized(),
+        )
+        .unwrap();
 
         // Now we can sign the unvault
         let unvault_tx_sighash = unvault_tx
@@ -1910,7 +2050,19 @@ mod tests {
             Some(child_number),
             SigHashType::All,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_unvault/unvault-{}", i),
+            unvault_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         unvault_tx.finalize(&secp)?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_unvault/unvault-{}", i),
+            unvault_tx.as_psbt_serialized(),
+        )
+        .unwrap();
 
         // Create and sign a spend transaction
         let unvault_txin = unvault_tx.unvault_txin(&unvault_descriptor, xpub_ctx, csv - 1); // Off-by-one csv
@@ -1926,6 +2078,12 @@ mod tests {
             xpub_ctx,
             0,
         );
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_spend/spend-{}", i),
+            spend_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         let spend_tx_sighash = spend_tx
             .signature_hash_internal_input(0, SigHashType::All)
             .expect("Input exists");
@@ -1942,6 +2100,13 @@ mod tests {
             Some(child_number),
             SigHashType::All,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_spend/spend-{}", i),
+            spend_tx.as_psbt_serialized(),
+        )
+        .unwrap();
+
         match spend_tx.finalize(&secp) {
             Err(e) => assert!(
                 // FIXME: uncomment when upgrading miniscript
@@ -1963,6 +2128,12 @@ mod tests {
             xpub_ctx,
             0,
         );
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_spend/spend-{}", i),
+            spend_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         let spend_tx_sighash = spend_tx
             .signature_hash_internal_input(0, SigHashType::All)
             .expect("Input exists");
@@ -1979,7 +2150,19 @@ mod tests {
             Some(child_number),
             SigHashType::All,
         )?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_spend/spend-{}", i),
+            spend_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         spend_tx.finalize(&secp)?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_spend/spend-{}", i),
+            spend_tx.as_psbt_serialized(),
+        )
+        .unwrap();
 
         // The spend transaction can also batch multiple unvault txos
         let unvault_txins = vec![
@@ -2024,6 +2207,12 @@ mod tests {
             xpub_ctx,
             0,
         );
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_spend/spend-{}", i),
+            spend_tx.as_psbt_serialized(),
+        )
+        .unwrap();
         for i in 0..n_txins {
             let spend_tx_sighash = spend_tx
                 .signature_hash_internal_input(i, SigHashType::All)
@@ -2040,9 +2229,21 @@ mod tests {
                     .collect::<Vec<bip32::ExtendedPrivKey>>(),
                 Some(child_number),
                 SigHashType::All,
-            )?
+            )?;
+            let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+            std::fs::write(
+                format!("fuzz/corpus/parse_spend/spend-{}", i),
+                spend_tx.as_psbt_serialized(),
+            )
+            .unwrap();
         }
         spend_tx.finalize(&secp)?;
+        let i = miniscript::bitcoin::secp256k1::rand::thread_rng().next_u32();
+        std::fs::write(
+            format!("fuzz/corpus/parse_spend/spend-{}", i),
+            spend_tx.as_psbt_serialized(),
+        )
+        .unwrap();
 
         // Test that we can get the hexadecimal representation of each transaction without error
         unvault_tx.hex();
